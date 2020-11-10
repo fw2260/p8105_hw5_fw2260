@@ -89,6 +89,8 @@ path_df <-
 ## Problem 3
 
 ```{r}
+set.seed(3)
 
+rnorm(n = 30, mean = 0, sd = 5)
 ```
 
