@@ -15,7 +15,7 @@ Reading and cleaning homicide data:
 
 ```{r clean_data}
 homicide_df <-
-  read_csv("data/homicide-data.csv") %>% 
+  read_csv("homicide_data/homicide-data.csv") %>% 
   mutate(
     city_state = str_c(city, state, sep = "_"),
     resolved = case_when(
@@ -71,4 +71,24 @@ results_df %>%
 
 
 ## Problem 2
+
+Read in all csv's:
+
+```{r}
+path_df <- 
+  tibble(
+    path = list.files("longitudinal_data")) %>% 
+  mutate(path = str_c("longitudinal_data/", path),
+         data = map(.x = path, ~read_csv(.x))) %>% 
+  unnest(data)
+  
+
+```
+
+
+## Problem 3
+
+```{r}
+
+```
 
