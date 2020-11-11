@@ -122,7 +122,7 @@ The control group seemed to stay pretty consistent (if not slightly decrease) in
 
 Generate 5000 datasets with n = 30, mu = 0, and sigma = 5, then extract their means and p-values:
 
-```{r mu_0}
+```{r mu_0, cache = TRUE}
 set.seed(3)
 
 sim_mean_t <- function(n = 30, mu, sigma = 5) {
@@ -136,7 +136,7 @@ sim_mean_t <- function(n = 30, mu, sigma = 5) {
 }
 
 sim_results <-
-  rerun(50, sim_mean_t(mu = 0)) %>% 
+  rerun(5000, sim_mean_t(mu = 0)) %>% 
   bind_rows()
 ```
 
