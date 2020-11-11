@@ -7,6 +7,22 @@ output: github_document
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
 ## Problem 1
@@ -15,7 +31,7 @@ The homicide dataset contains information gathered by the *Washington Post* on h
 
 Reading and cleaning the homicide data:
 
-```{r clean_data}
+```{r clean_homicides}
 homicide_df <-
   read_csv("homicide_data/homicide-data.csv") %>% 
   mutate(
@@ -60,7 +76,7 @@ results_df <- aggregate_df %>%
   select(city_state, estimate, conf.low, conf.high)
 ```
 
-Make a plot:
+Make a plot to display the proportion of unsolved homicides (+- confidence interval) in all the cities:
 
 ```{r}
 results_df %>% 
@@ -74,18 +90,34 @@ results_df %>%
 
 ## Problem 2
 
-Read in all csv's:
+Read in all csv's and tidying the result to include an `id` and `arm` variable:
 
-```{r}
+```{r clean_longitudinal}
 longitudinal_df <- 
   tibble(
     path = list.files("longitudinal_data")) %>% 
   mutate(path = str_c("longitudinal_data/", path),
          data = map(.x = path, ~read_csv(.x))) %>% 
-  unnest(data)
-  
-
+  unnest(data) %>% 
+  mutate(id = str_extract(path, "\\d+"),
+         id = as.numeric(id),
+         arm = str_extract(path, "con|exp")) %>% 
+  relocate(id, arm, path,everything()) %>% 
+  mutate(arm = recode(arm, con = "control", exp = "experimental")) %>% 
+  pivot_longer(week_1:week_8,
+               names_to = "week",
+               names_prefix = "week_",
+               values_to = "value")
 ```
+
+Make a spaghetti plot to display the results over time for each subject:
+
+```{r spaghetti_plot}
+longitudinal_df %>% 
+  ggplot(aes(x = week, y = value, group = id, color = arm)) +
+  geom_path()
+```
+
 
 
 ## Problem 3
