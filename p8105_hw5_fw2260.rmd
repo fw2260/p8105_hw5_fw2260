@@ -31,7 +31,7 @@ The homicide dataset contains information gathered by the *Washington Post* on h
 
 Reading and cleaning the homicide data:
 
-```{r clean_homicides}
+```{r clean_homicides, message = FALSE}
 homicide_df <-
   read_csv("homicide_data/homicide-data.csv") %>% 
   mutate(
@@ -43,9 +43,6 @@ homicide_df <-
     ) %>% 
   select(city_state, resolved) %>% 
   filter(city_state != "Tulsa_AL")
-
-view(homicide_df)
-
 ```
 
 Get total unsolved homicides and total homicides for each city, then perform prop test on Baltimore, MD:
@@ -58,7 +55,7 @@ aggregate_df <- homicide_df %>%
     hom_unsolved = sum(resolved == "unsolved")
   )
 
-prop.test(aggregate_df %>% filter(city_state == "Baltimore_MD") %>% pull(hom_unsolved),
+prop.test(aggregate_df %>% filter(city_state == "Baltimore_MD") %>% pull(hom_unsolved), 
           aggregate_df %>% filter(city_state == "Baltimore_MD") %>% pull(hom_total)) %>% 
   broom::tidy()
 ```
@@ -76,7 +73,7 @@ results_df <- aggregate_df %>%
   select(city_state, estimate, conf.low, conf.high)
 ```
 
-Make a plot to display the proportion of unsolved homicides (+- confidence interval) in all the cities:
+Make a plot to display the proportion of unsolved homicides (+- confidence interval) in all the cities from lowest to highest:
 
 ```{r}
 results_df %>% 
@@ -92,7 +89,7 @@ results_df %>%
 
 Read in all csv's and tidying the result to include an `id` and `arm` variable:
 
-```{r clean_longitudinal}
+```{r clean_longitudinal, message = FALSE}
 longitudinal_df <- 
   tibble(
     path = list.files("longitudinal_data")) %>% 
@@ -118,13 +115,35 @@ longitudinal_df %>%
   geom_path()
 ```
 
+The control group seemed to stay pretty consistent (if not slightly decrease) in their values over the 8 weeks, while the experimental group's values seemed to increase over the 8 weeks.
 
 
 ## Problem 3
 
-```{r}
+Generate 5000 datasets with n = 30, mu = 0, and sigma = 5, then extract their means and p-values:
+
+```{r mu_0}
 set.seed(3)
 
-rnorm(n = 30, mean = 0, sd = 5)
+sim_mean_t <- function(n = 30, mu, sigma = 5) {
+  
+  sim_data = tibble(
+    x = rnorm(n = n, mean = mu, sd = sigma))
+  
+  sim_data %>% 
+    summarize(mu_hat = mean(x),
+              p_value = t.test(x) %>% broom::tidy() %>% pull(p.value))
+}
+
+sim_results <-
+  rerun(50, sim_mean_t(mu = 0)) %>% 
+  bind_rows()
 ```
+
+Repeat this for mu = {1,2,3,4,5,6}:
+
+```{r mu_1_6}
+
+```
+
 
