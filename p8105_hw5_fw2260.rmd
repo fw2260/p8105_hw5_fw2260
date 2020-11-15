@@ -164,7 +164,8 @@ sim_results %>%
     rejected = sum(p_value < 0.05)) %>% 
   mutate(proportion = rejected / total) %>% 
   ggplot(aes(x = true_mu, y = proportion)) +
-  geom_col()
+  geom_point() +
+  geom_smooth(se = FALSE)
 ```
 
 It seems that as effect size increases, so does power.
