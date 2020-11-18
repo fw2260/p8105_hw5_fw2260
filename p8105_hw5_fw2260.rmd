@@ -164,13 +164,12 @@ sim_results %>%
     rejected = sum(p_value < 0.05)) %>% 
   mutate(proportion = rejected / total) %>% 
   ggplot(aes(x = true_mu, y = proportion)) +
-  geom_point() +
-  geom_smooth(se = FALSE)
+  geom_line()
 ```
 
-It seems that as effect size increases, so does power.
+As mu increases, the proportion of times the null is rejected increases as well. Meaning that as effect size increases, so does power.
 
-Make a plot showing the average estimate of $\hat \mu$ on the y-axis and the true value of $\mu$ on the x-axis. Overlay a second plot of the average estimate of $\hat \mu$ only in samples for which the null was rejected:
+Make a plot showing the average estimate of $\hat \mu$ on the y-axis and the true value of $\mu$ on the x-axis. Overlay a second plot (in purple) of the average estimate of $\hat \mu$ only in samples for which the null was rejected:
 
 ```{r muhat_plots}
 rejected_muhat <- 
@@ -183,9 +182,10 @@ sim_results %>%
   group_by(true_mu) %>% 
   summarize(avg_muhat = mean(mu_hat)) %>% 
   ggplot(aes(x = true_mu, y = avg_muhat)) +
-  geom_point() +
-  geom_point(data = rejected_muhat, 
-             color = "purple")
+  geom_line() +
+  geom_line(data = rejected_muhat, 
+             color = "purple4")
 
 ```
 
+The two plots are approximately the same starting from $\mu$ = 3. At $\mu$ = 1, the average $\hat \mu$ only in samples for which the null was rejected is around 2, instead of 1.
